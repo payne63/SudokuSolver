@@ -33,15 +33,15 @@ public class Grid {
             }
             else { 
                 if (_retryCount > RetryCountSettings && indexBloc > 2) {
-                    DeleteBloc(PositionsBlocs[indexBloc].Multiply(3));
+                    DeleteLocalBloc(PositionsBlocs[indexBloc].Multiply(3));
                     indexBloc--;
-                    DeleteBloc(PositionsBlocs[indexBloc].Multiply(3));
+                    DeleteLocalBloc(PositionsBlocs[indexBloc].Multiply(3));
                     indexBloc--;
-                    DeleteBloc(PositionsBlocs[indexBloc].Multiply(3));
+                    DeleteLocalBloc(PositionsBlocs[indexBloc].Multiply(3));
                     _retryCount = 0;
                 }
                 else {
-                    DeleteBloc(PositionsBlocs[indexBloc].Multiply(3));
+                    DeleteLocalBloc(PositionsBlocs[indexBloc].Multiply(3));
                 }
             }
 
@@ -77,8 +77,8 @@ public class Grid {
 
     public List<Cell> GetFreeCells() {
         List<Cell> cells = new List<Cell>();
-        foreach (var valueTuple in getGridValues()) {
-            if (valueTuple.text == "0") {
+        foreach (var valueTuple in GetGridValues()) {
+            if (valueTuple.val == 0) {
                 cells.Add(new Cell(valueTuple.pos));
             }
         }
@@ -94,34 +94,55 @@ public class Grid {
         return true;
     }
 
-    public void DeleteGrid() {
+    public void DeleteValue() {
         foreach (var positionsBloc in PositionsBlocs) {
-            DeleteBloc(positionsBloc.Multiply(3));
+            DeleteLocalBloc(positionsBloc.Multiply(3));
         }
     }
 
-    private void DeleteBloc((int x, int y) pos) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
+    private void DeleteLocalBloc((int x, int y) pos) {
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 3; j++) {
                 GridValues[i + pos.x, j + pos.y] = 0;
             }
         }
     }
 
 
-    public IEnumerable<(string text, (int X, int Y) pos)> getGridValues() {
+    public IEnumerable<(int val, (int X, int Y) pos)> GetGridValues() {
         for (var y = 0; y < 9; y++) {
             for (var x = 0; x < 9; x++) {
-                yield return new(GridValues[x, y].ToString(), (x, y));
+                yield return new(GridValues[x, y], (x, y));
             }
         }
     }
 
-    public void Modification(int removeNumber) {
+    public IEnumerable<(int value, (int x, int y) pos)> GetLocalBloc((int x, int y) pos) {
+        var localX = pos.x switch {
+            < 3 => 0,
+            < 6 => 3,
+            < 9 => 6,
+        };
+        var localY = pos.y switch {
+            < 3 => 0,
+            < 6 => 3,
+            < 9 => 6,
+        };
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 3; j++) {
+                yield return (GridValues[i + localX, j + localY],(i + localX, j + localY ));
+            }
+        }
+    }
+
+    public void RemoveNumbers(int countRemove) {
         if (!GridIsFilled) throw new Exception("Grid is not filled");
         var rnd = new Random(DateTime.Now.Millisecond);
-        for (int i = 0; i < removeNumber; i++) {
+        for (int i = 0; i < countRemove; i++) {
             (int x,int y) pos = (rnd.Next(0, 9), rnd.Next(0, 9));
+            while (GridValues[pos.x, pos.y] == 0) {
+                pos = (rnd.Next(0, 9), rnd.Next(0, 9));
+            }
             GridValues[pos.x,pos.y] = 0;
         }
     }
