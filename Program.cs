@@ -4,30 +4,40 @@ using System.Diagnostics;
 namespace SudokuSolver;
 
 class Program {
-    private static Grid grid = new Grid();
-    private static GridDrawer gridDrawer = new GridDrawer();
-    private static Stopwatch stopwatch = new Stopwatch();
-    private static float ElapsedTime = 0f;
+    private static readonly Grid Grid = new Grid();
+    private static readonly RaylibDrawer RaylibDrawer = new RaylibDrawer();
+    private static readonly Stopwatch Stopwatch = new Stopwatch();
+    private static float _elapsedTime = 0f;
     private static readonly List<float> ElapsedTimes = [];
 
     [STAThread]
     private static void Main(string[] args) {
-        Raylib.InitWindow(800, 800, "SudokuSolver");
+        Raylib.InitWindow(1280, 1024, "SudokuSolver");
         
-        grid.FillAllBlocs();
-        grid.Modification(10);
+        Grid.FillAllBlocs();
+        Grid.Modification(10);
+        var cells = Grid.GetFreeCells();
         
         while (!Raylib.WindowShouldClose()) {
-            gridDrawer.Draw(grid.GridValues,ElapsedTime,ElapsedTimes);
+            RaylibDrawer.Clear();
+            RaylibDrawer.DrawGridWithStats(Grid.GridValues,_elapsedTime,ElapsedTimes);
+            RaylibDrawer.Draw((() => {
+                var index = 0;
+                foreach (var cell in cells) {
+                    Raylib.DrawText(cell.ToString(),400,index,30, Color.White);
+                    index+=50;
+                }
+
+                ;}));
             if (Raylib.IsKeyPressed(KeyboardKey.Enter)) {
                 for (int i = 0; i < 1000; i++) {
-                    grid.DeleteGrid();
-                    stopwatch.Start();
-                    grid.FillAllBlocs();
-                    stopwatch.Stop();
-                    ElapsedTime = stopwatch.ElapsedMilliseconds;
-                    ElapsedTimes.Add(ElapsedTime);
-                    stopwatch.Reset();
+                    Grid.DeleteGrid();
+                    Stopwatch.Start();
+                    Grid.FillAllBlocs();
+                    Stopwatch.Stop();
+                    _elapsedTime = Stopwatch.ElapsedMilliseconds;
+                    ElapsedTimes.Add(_elapsedTime);
+                    Stopwatch.Reset();
                 }
             }
 
@@ -37,5 +47,6 @@ class Program {
         }
         Raylib.CloseWindow();
     }
+    
 
 }

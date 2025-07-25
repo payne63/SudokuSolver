@@ -75,6 +75,16 @@ public class Grid {
         return true;
     }
 
+    public List<Cell> GetFreeCells() {
+        List<Cell> cells = new List<Cell>();
+        foreach (var valueTuple in getGridValues()) {
+            if (valueTuple.text == "0") {
+                cells.Add(new Cell(valueTuple.pos));
+            }
+        }
+        return cells;
+    }
+
     private bool CanBePlace((int x, int y) selectedPosition, int nb) {
         for (int x = 0; x < 9; x++) {
             if (GridValues[selectedPosition.x, x] == nb || GridValues[x, selectedPosition.y] == nb) {
@@ -99,10 +109,10 @@ public class Grid {
     }
 
 
-    public IEnumerable<(string text, int X, int Y)> getGridValues() {
+    public IEnumerable<(string text, (int X, int Y) pos)> getGridValues() {
         for (var y = 0; y < 9; y++) {
             for (var x = 0; x < 9; x++) {
-                yield return new(GridValues[x, y].ToString(), x, y);
+                yield return new(GridValues[x, y].ToString(), (x, y));
             }
         }
     }
