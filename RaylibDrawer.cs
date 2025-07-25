@@ -16,9 +16,6 @@ public class RaylibDrawer {
         TextSize = textSize;
     }
     public void DrawGridWithStats( int[,] grid,float? ElapsedTime = null, List<float> ElapsedTimes = null ) {
-        Raylib.BeginDrawing();
-        Raylib.BeginMode2D(camera);
-        // Raylib.ClearBackground(Color.Blue);
         DrawGrid(grid);
         if (ElapsedTime != null) {
             Raylib.DrawText($"Elapsed Time= {ElapsedTime.ToString()}", 0, -40, TextSize, Color.Orange);
@@ -26,8 +23,6 @@ public class RaylibDrawer {
         if (ElapsedTimes != null && ElapsedTimes.Count() > 0) {
             Raylib.DrawText($"Elapsed Time Average= {ElapsedTimes.Sum() / ElapsedTimes.Count}", 0, -80, TextSize, Color.Orange);
         }    
-        Raylib.EndMode2D();
-        Raylib.EndDrawing();
     }
 
     public void Draw(Action drawAction) {
@@ -39,12 +34,10 @@ public class RaylibDrawer {
         Raylib.EndDrawing();
     }
     
-    public void Clear() {Draw(()=> { Raylib.ClearBackground(Color.Blue);});}
-
     private static void DrawGrid(int[,] grid) {
         for (int y = 0; y < 9; y++) {
             for (int x = 0; x < 9; x++) {
-                var val = grid[y, x] == 0 ? " ": grid[y, x].ToString();
+                var val = grid[x, y] == 0 ? " ": grid[y, x].ToString();
                 Raylib.DrawText(val, x * TextSize, y * TextSize, TextSize, Color.Black);
             }
         }

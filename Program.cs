@@ -19,14 +19,13 @@ class Program {
         var cells = Grid.GetFreeCells();
         
         while (!Raylib.WindowShouldClose()) {
-            RaylibDrawer.Clear();
-            RaylibDrawer.DrawGridWithStats(Grid.GridValues,_elapsedTime,ElapsedTimes);
             RaylibDrawer.Draw((() => {
                 var index = 0;
                 foreach (var cell in cells) {
                     Raylib.DrawText(cell.ToString(),400,index,30, Color.White);
                     index+=50;
                 }
+                RaylibDrawer.DrawGridWithStats(Grid.GridValues,_elapsedTime,ElapsedTimes);
 
                 ;}));
             if (Raylib.IsKeyPressed(KeyboardKey.Enter)) {
