@@ -138,12 +138,13 @@ public class Grid {
     public void RemoveNumbers(int countRemove) {
         if (!GridIsFilled) throw new Exception("Grid is not filled");
         var rnd = new Random(DateTime.Now.Millisecond);
-        for (int i = 0; i < countRemove; i++) {
+        for (var i = 0; i < countRemove/2; i++) {
             (int x,int y) pos = (rnd.Next(0, 9), rnd.Next(0, 9));
             while (GridValues[pos.x, pos.y] == 0) {
                 pos = (rnd.Next(0, 9), rnd.Next(0, 9));
             }
             GridValues[pos.x,pos.y] = 0;
+            GridValues[8-pos.x,8-pos.y] = 0;
         }
     }
 }
